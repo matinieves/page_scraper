@@ -9,6 +9,10 @@ RSpec.describe Scraper do
     )
   end
 
+  before do
+    allow(Scraper::RequestClient).to receive(:get).with(url_with_protocol).and_return(response)
+  end
+
   describe 'when the given page is a new page' do
     let(:url_with_protocol) { 'http://example.com' }
     let(:url_without_protocol) { 'example.com' }
@@ -29,11 +33,11 @@ RSpec.describe Scraper do
 
   describe 'when the given page already exist' do
     let!(:page) { FactoryGirl.create(:page) }
-    let(:page_with_protocol) { page.url }
+    let(:url_with_protocol) { page.url }
 
     describe 'when the url has protocol' do
       it 'should create a new page' do
-        expect { Scraper.process_page(page_with_protocol) }.to_not change { Page.count }
+        expect { Scraper.process_page(url_with_protocol) }.to_not change { Page.count }
       end
     end
   end
