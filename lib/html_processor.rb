@@ -17,7 +17,7 @@ class HTMLProcessor
     @html.css(element_type).each do |node|
       element = PageElement.new(page: @page)
       element.element_type = element_type
-      element.content = node.text
+      element.content = encode_value(node.text)
       extract_attributes(element, node)
       element.save
       @elements << element
@@ -30,6 +30,10 @@ class HTMLProcessor
   end
 
   def node_value(node)
-    node.is_a?(String) ? node : node.value
+    node.is_a?(String) ? encode_value(node) : encode_value(node.value)
+  end
+
+  def encode_value(value)
+    value.encode!('UTF-8', 'UTF-8', :invalid => :replace)
   end
 end
