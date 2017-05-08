@@ -8,7 +8,7 @@ class PagesController < ApplicationController
     if Scraper.process_page(url)
       render json: { message: 'Page succesfuly added' }
     else
-      render json: { message: "An error ocurred while scrapin the page with url #{url}" }
+      render json: { message: "An error ocurred while scraping the page with url #{url}" }
     end
   end
 
