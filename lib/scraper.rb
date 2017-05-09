@@ -3,17 +3,15 @@ require 'net/http'
 module Scraper
   SUCCESS = '200'
 
-  def self.process_page(url)
-    url = URI(url).scheme.nil? ? "http://#{url}" : url
-    page = Page.find_or_create_by_url(url)
-
-    response = RequestClient.get(url)
+  def self.process_page(page)
+    response = RequestClient.get(page.url)
 
     if(response.code == SUCCESS)
       processor = HTMLProcessor.new(response.body, page)
       processor.extract_content
+      processor.elements
     else
-      false
+      raise RequestClientError.new("An error ocurred while scraping the page with url #{page.url}")
     end
   end
 
@@ -22,4 +20,6 @@ module Scraper
       Net::HTTP.get_response(URI(uri))
     end
   end
+
+  class RequestClientError < StandardError;  end
 end

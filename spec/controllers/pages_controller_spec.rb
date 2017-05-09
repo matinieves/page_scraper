@@ -46,37 +46,36 @@ RSpec.describe PagesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    describe 'on success' do
-      it 'should create the new page' do
-        expect { create_action }.to change { Page.count }.by(1)
-      end
+    it 'should create the new page' do
+      expect { create_action }.to change { Page.count }.by(1)
+    end
 
+    describe 'on success' do
       it 'it should create a new page element' do
         expect { create_action }.to change { PageElement.count }.by(1)
       end
 
       it 'should render the correct message' do
         create_action
-        expect(JSON.parse(response.body)['message']).to eq 'Page succesfuly added'
+        expect(JSON.parse(response.body)['message']).to eq 'Page succesfully added'
       end
     end
 
     describe 'on error' do
+      let(:request_client_response) do
+        instance_double(
+          "Net::HTTPResponse",
+          code: '404'
+        )
+      end
+
       before do
-        allow(Scraper).to receive(:process_page).and_return(false)
-      end
-
-      it 'should not create the new page' do
-        expect { create_action }.to_not change { Page.count }
-      end
-
-      it 'it should not create a new page element' do
-        expect { create_action }.to_not change { PageElement.count }
+        allow(Scraper::RequestClient).to receive(:get).and_return(request_client_response)
       end
 
       it 'should render the correct message' do
         create_action
-        message = "An error ocurred while scrapin the page with url #{url}"
+        message = "An error ocurred while scraping the page with url #{url}"
         expect(JSON.parse(response.body)['message']).to eq message
       end
     end

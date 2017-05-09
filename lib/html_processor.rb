@@ -15,18 +15,17 @@ class HTMLProcessor
 
   def element_content(element_type)
     @html.css(element_type).each do |node|
-      element = PageElement.new(page: @page)
-      element.element_type = element_type
-      element.content = encode_value(node.text)
+      element = {}
+      element[:element_type] = element_type
+      element[:content] = encode_value(node.text)
       extract_attributes(element, node)
-      element.save
       @elements << element
     end
   end
 
   def extract_attributes(element, node)
     attrs = node.attributes
-    element.element_attributes = attrs.update(attrs){|key,value| node_value(value) }
+    element[:element_attributes] = attrs.update(attrs){|key,value| node_value(value) }
   end
 
   def node_value(node)

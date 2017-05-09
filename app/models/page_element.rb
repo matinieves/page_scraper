@@ -5,4 +5,10 @@ class PageElement < ApplicationRecord
   belongs_to :page
 
   validates :page, presence: true
+
+  def self.save_for_page(page)
+    Scraper.process_page(page).each do |element_attrs|
+      PageElement.create(element_attrs.merge(page: page))
+    end
+  end
 end
